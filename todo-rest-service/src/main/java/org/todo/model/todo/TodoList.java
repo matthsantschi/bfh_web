@@ -24,9 +24,10 @@ public class TodoList {
 				.orElseThrow(TodoNotFoundException::new);
 	}
 
-	public void addTodo(Todo todo) {
+	public Todo addTodo(Todo todo) {
 		todo.setId(++lastId);
 		todos.add(todo);
+		return todo;
 	}
 
 	public void updateTodo(Todo todo) throws TodoNotFoundException {
