@@ -5,10 +5,13 @@ import java.util.List;
 
 public class UserAdmin {
 
-	private static final UserAdmin instance = new UserAdmin();
+	private static UserAdmin instance;
 	private final List<User> users = new ArrayList<>();
 
 	public static UserAdmin getInstance() {
+		if(instance == null) {
+			instance = new UserAdmin();
+		}
 		return instance;
 	}
 
@@ -31,7 +34,7 @@ public class UserAdmin {
 		return user;
 	}
 
-	private User findUser(String username) {
+	public User findUser(String username) {
 		return users.stream().filter(user -> user.getName().equals(username)).findFirst().orElse(null);
 	}
 }

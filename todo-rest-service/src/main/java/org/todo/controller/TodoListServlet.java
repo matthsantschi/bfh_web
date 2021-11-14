@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import org.todo.model.todo.Todo;
 import org.todo.model.todo.TodoList;
 import org.todo.model.todo.TodoNotFoundException;
+import org.todo.model.user.User;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -18,23 +19,16 @@ import jakarta.servlet.annotation.WebServlet;
 @WebServlet("/api/todos/*")
 public class TodoListServlet extends HttpServlet {
 
-    private static TodoList globalTodoList = new TodoList();
     private static ObjectMapper objectMapper = ObjectMapperFactory.createObjectMapper();
 
     @Override
     public void init() throws ServletException {
-        Todo todo1 = new Todo("Todo1", "Cat1", LocalDate.now());
-        Todo todo2 = new Todo("Todo2", "Cat1", LocalDate.now());
-        Todo todo3 = new Todo("Todo3", "Cat2", LocalDate.now());
-        globalTodoList.addTodo(todo1);
-        globalTodoList.addTodo(todo2);
-        globalTodoList.addTodo(todo3);
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json;charset=UTF-8");
-        objectMapper.writeValue(resp.getOutputStream(), globalTodoList.getTodos());
+        objectMapper.writeValue(resp.getOutputStream(), getTodoList(req).getTodos());
     }
 
     @Override
@@ -48,7 +42,7 @@ public class TodoListServlet extends HttpServlet {
         }
         Todo todoToResp = null;
         if (todoFromReq != null) {
-            todoToResp = globalTodoList.addTodo(todoFromReq);
+            todoToResp = getTodoList(req).addTodo(todoFromReq);
         }
         resp.setContentType("application/json;charset=UTF-8");
         resp.setStatus(HttpServletResponse.SC_OK);
@@ -64,7 +58,7 @@ public class TodoListServlet extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
         try {
-            globalTodoList.updateTodo(todoFromReq);
+            getTodoList(req).updateTodo(todoFromReq);
         } catch (TodoNotFoundException e) {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
@@ -80,10 +74,14 @@ public class TodoListServlet extends HttpServlet {
             return;
         }
         try {
-            globalTodoList.removeTodo(Integer.parseInt(todoId[1]));
+            getTodoList(req).removeTodo(Integer.parseInt(todoId[1]));
         } catch (Exception e) {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
+    private TodoList getTodoList(HttpServletRequest req) {
+        User user = (User) req.getAttribute("user");
+        return user.getTodoList();
+    }
 }
