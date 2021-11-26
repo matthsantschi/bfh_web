@@ -18,17 +18,17 @@ const encode = (dictObj, string) => {
     this.encodeChar = function (dictObj, char) { return alphabet[char]; }
 
     var morseCode = ""
-    for (const char of string.toLowerCase()) {
-        morseCode += this.encodeChar(dictObj, char) + "STOP";
+    for (let index = 0; index < string.length; index++) {
+        morseCode += this.encodeChar(dictObj, string[index]) + "STOP";
     }
     return morseCode;
 }
 
-console.log(encode(alphabet, "Bla Bla"));
-
-translateButton = document.getElementById("js_translate");
+const translateButton = document.getElementById("js_translate");
 
 translateButton.addEventListener("click", function (event) {
     event.preventDefault();
-    console.log("button clicked");
+    let textToTranslate = document.getElementById("js_textToTranslate")
+    let translationDiv = document.getElementById("js_translationDiv")
+    translationDiv.innerHTML = encode(alphabet, textToTranslate.value);
 });
