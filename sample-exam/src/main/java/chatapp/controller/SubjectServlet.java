@@ -1,0 +1,29 @@
+package chatapp.controller;
+
+import chatapp.model.ChatService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.util.Set;
+import java.util.logging.Logger;
+
+@WebServlet("/api/subjects")
+public class SubjectServlet extends HttpServlet {
+
+	private static final Logger logger = Logger.getLogger(MessageServlet.class.getName());
+	private final ChatService chatService = ChatService.getInstance();
+	private final ObjectMapper objectMapper = ObjectMapperFactory.createObjectMapper();
+
+	@Override
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		logger.info("Getting subjects");
+        Set<String> subject = chatService.getSubjects();
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setContentType("application/json");
+		objectMapper.writeValue(response.getOutputStream(), subject);
+	}
+}
